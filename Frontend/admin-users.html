@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng - Thư viện Mini</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-book"></i>
+                <h1>Thư viện Mini - Admin</h1>
+            </div>
+            <nav class="nav">
+                <a href="admin-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="admin-books.html" class="nav-link">Quản lý sách</a>
+                <a href="admin-users.html" class="nav-link active">Quản lý người dùng</a>
+                <a href="admin-borrows.html" class="nav-link">Quản lý mượn trả</a>
+                <a href="admin-reports.html" class="nav-link">Báo cáo</a>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-outline" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h2><i class="fas fa-users"></i> Quản lý người dùng</h2>
+                    <p>Quản lý thông tin và quyền hạn của các thành viên thư viện</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAddUserModal()">
+                    <i class="fas fa-user-plus"></i> Thêm người dùng
+                </button>
+            </section>
+
+            <!-- User Statistics -->
+            <section class="user-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalUsersCount">0</h3>
+                        <p>Tổng thành viên</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeUsersCount">0</h3>
+                        <p>Đang hoạt động</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="borrowingUsersCount">0</h3>
+                        <p>Đang mượn sách</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="newUsersThisMonth">0</h3>
+                        <p>Mới tham gia tháng này</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="user-filters">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="userSearch">Tìm kiếm người dùng</label>
+                        <input type="text" id="userSearch" placeholder="Tên, email, số điện thoại...">
+                    </div>
+                    <div class="form-group">
+                        <label for="roleFilter">Vai trò</label>
+                        <select id="roleFilter">
+                            <option value="">Tất cả vai trò</option>
+                            <option value="reader">Độc giả</option>
+                            <option value="admin">Quản trị viên</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="statusFilter">Trạng thái</label>
+                        <select id="statusFilter">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Ngừng hoạt động</option>
+                            <option value="suspended">Tạm khóa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="applyUserFilters()">
+                            <i class="fas fa-search"></i> Lọc
+                        </button>
+                        <button class="btn btn-outline" onclick="clearUserFilters()">
+                            <i class="fas fa-times"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Table -->
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Danh sách người dùng</h3>
+                    <div class="bulk-actions">
+                        <button class="btn btn-success btn-small" onclick="bulkUserAction('activate')" style="display: none;">
+                            <i class="fas fa-check"></i> Kích hoạt
+                        </button>
+                        <button class="btn btn-warning btn-small" onclick="bulkUserAction('suspend')" style="display: none;">
+                            <i class="fas fa-pause"></i> Tạm khóa
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="bulkUserAction('delete')" style="display: none;">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers()">
+                                </th>
+                                <th>Avatar</th>
+                                <th>Họ tên <i class="fas fa-sort" onclick="sortUsers('name')"></i></th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tham gia <i class="fas fa-sort" onclick="sortUsers('joinDate')"></i></th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div id="usersPagination" class="pagination">
+                    <!-- Pagination will be generated by JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('userModal')">&times;</span>
+            <h3 id="userModalTitle">Thêm người dùng mới</h3>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userName">Họ và tên *</label>
+                        <input type="text" id="userName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">Email *</label>
+                        <input type="email" id="userEmail" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userPhone">Số điện thoại</label>
+                        <input type="tel" id="userPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="userRole">Vai trò *</label>
+                        <select id="userRole" required>
+                            <option value="reader">Độc giả</option>
+                            <option value="admin">Quản trị viên</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userStatus">Trạng thái</label>
+                        <select id="userStatus">
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Ngừng hoạt động</option>
+                            <option value="suspended">Tạm khóa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">Mật khẩu *</label>
+                        <input type="password" id="userPassword">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="userNotes">Ghi chú</label>
+                    <textarea id="userNotes" rows="3" placeholder="Ghi chú về người dùng..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('userModal')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="saveUserButtonText">Thêm người dùng</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div id="userDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeModal('userDetailModal')">&times;</span>
+            <div id="userDetailContent">
+                <!-- User detail will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('deleteUserModal')">&times;</span>
+            <div class="delete-confirmation">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Xác nhận xóa người dùng</h3>
+                <p>Bạn có chắc chắn muốn xóa người dùng này không? Hành động này không thể hoàn tác.</p>
+                <div class="form-actions">
+                    <button class="btn btn-outline" onclick="closeModal('deleteUserModal')">Hủy</button>
+                    <button class="btn btn-danger" onclick="confirmUserDelete()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let currentUserPage = 1;
+        let usersPerPage = 10;
+        let filteredUsers = [];
+        let userSortField = '';
+        let userSortDirection = 'asc';
+        let selectedUsers = new Set();
+        let userToDelete = null;
+
+        // Initialize admin users page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check admin authentication
+            if (!window.libraryApp.currentUser || window.libraryApp.currentUser.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            loadUsersData();
+            setupUsersEventListeners();
+        });
+
+        function loadUsersData() {
+            filteredUsers = [...window.libraryApp.users];
+            updateUserStats();
+            renderUsersTable();
+            renderUsersPagination();
+        }
+
+        function updateUserStats() {
+            const totalUsers = window.libraryApp.users.filter(u => u.role === 'reader').length;
+            const activeUsers = window.libraryApp.users.filter(u => u.role === 'reader' && (u.status || 'active') === 'active').length;
+            
+            const borrowingUsers = new Set();
+            window.libraryApp.borrowRecords
+                .filter(record => record.status === 'borrowed')
+                .forEach(record => borrowingUsers.add(record.userId));
+            
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const newUsersThisMonth = window.libraryApp.users.filter(u => {
+                if (u.role !== 'reader') return false;
+                const joinDate = new Date(u.joinDate);
+                return joinDate.getMonth() === currentMonth && joinDate.getFullYear() === currentYear;
+            }).length;
+
+            document.getElementById('totalUsersCount').textContent = totalUsers;
+            document.getElementById('activeUsersCount').textContent = activeUsers;
+            document.getElementById('borrowingUsersCount').textContent = borrowingUsers.size;
+            document.getElementById('newUsersThisMonth').textContent = newUsersThisMonth;
+        }
+
+        function renderUsersTable() {
+            const startIndex = (currentUserPage - 1) * usersPerPage;
+            const endIndex = startIndex + usersPerPage;
+            const usersToShow = filteredUsers.slice(startIndex, endIndex);
+            
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (usersToShow.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Không tìm thấy người dùng nào</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = usersToShow.map(user => {
+                const borrowCount = window.libraryApp.borrowRecords.filter(r => r.userId === user.id).length;
+                const isCurrentlyBorrowing = window.libraryApp.borrowRecords.some(r => r.userId === user.id && r.status === 'borrowed');
+                
+                return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" value="${user.id}" onchange="toggleUserSelect(${user.id})">
+                        </td>
+                        <td>
+                            <div class="user-avatar">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50&q=80" 
+                                     alt="${user.name}" class="avatar-img">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-name-info">
+                                <strong>${user.name}</strong>
+                                ${isCurrentlyBorrowing ? '<span class="borrowing-badge">Đang mượn sách</span>' : ''}
+                            </div>
+                        </td>
+                        <td>${user.email}</td>
+                        <td>${user.phone || 'Chưa cập nhật'}</td>
+                        <td>
+                            <span class="role-badge ${user.role}">
+                                ${user.role === 'admin' ? 'Quản trị viên' : 'Độc giả'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge ${user.status || 'active'}">
+                                ${getStatusText(user.status || 'active')}
+                            </span>
+                        </td>
+                        <td>${window.libraryApp.formatDate(user.joinDate)}</td>
+                        <td class="actions">
+                            <button class="btn btn-info btn-small" onclick="viewUserDetail(${user.id})" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-primary btn-small" onclick="editUser(${user.id})" title="Sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.id !== window.libraryApp.currentUser.id ? 
+                                `<button class="btn btn-danger btn-small" onclick="deleteUser(${user.id})" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>` : 
+                                '<span class="text-muted">Bản thân</span>'
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'active': return 'Hoạt động';
+                case 'inactive': return 'Ngừng hoạt động';
+                case 'suspended': return 'Tạm khóa';
+                default: return 'Hoạt động';
+            }
+        }
+
+        function setupUsersEventListeners() {
+            // Search and filter inputs
+            document.getElementById('userSearch').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    applyUserFilters();
+                }
+            });
+
+            document.getElementById('roleFilter').addEventListener('change', applyUserFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyUserFilters);
+
+            // User form
+            document.getElementById('userForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveUser();
+            });
+        }
+
+        function applyUserFilters() {
+            const searchQuery = document.getElementById('userSearch').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            filteredUsers = window.libraryApp.users.filter(user => {
+                const matchesSearch = !searchQuery || 
+                    user.name.toLowerCase().includes(searchQuery) ||
+                    user.email.toLowerCase().includes(searchQuery) ||
+                    (user.phone && user.phone.includes(searchQuery));
+                
+                const matchesRole = !roleFilter || user.role === roleFilter;
+                const matchesStatus = !statusFilter || (user.status || 'active') === statusFilter;
+                
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+            
+            // Apply sorting if any
+            if (userSortField) {
+                applyUserSorting();
+            }
+            
+            currentUserPage = 1;
+            renderUsersTable();
+            renderUsersPagination();
+        }
+
+        function clearUserFilters() {
+            document.getElementById('userSearch').value = '';
+            document.getElementById('roleFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            
+            filteredUsers = [...window.libraryApp.users];
+            currentUserPage = 1;
+            userSortField = '';
+            userSortDirection = 'asc';
+            
+            renderUsersTable();
+            renderUsersPagination();
+        }
+
+        function sortUsers(field) {
+            if (userSortField === field) {
+                userSortDirection = userSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                userSortField = field;
+                userSortDirection = 'asc';
+            }
+            
+            applyUserSorting();
+            renderUsersTable();
+        }
+
+        function applyUserSorting() {
+            filteredUsers.sort((a, b) => {
+                let valueA = a[userSortField];
+                let valueB = b[userSortField];
+                
+                if (userSortField === 'joinDate') {
+                    valueA = new Date(valueA);
+                    valueB = new Date(valueB);
+                } else {
+                    valueA = (valueA || '').toString().toLowerCase();
+                    valueB = (valueB || '').toString().toLowerCase();
+                }
+                
+                if (userSortDirection === 'asc') {
+                    return valueA > valueB ? 1 : -1;
+                } else {
+                    return valueA < valueB ? 1 : -1;
+                }
+            });
+        }
+
+        function renderUsersPagination() {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            const pagination = document.getElementById('usersPagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            if (currentUserPage > 1) {
+                paginationHTML += `
+                    <button class="btn btn-outline btn-small" onclick="changeUserPage(${currentUserPage - 1})">
+                        <i class="fas fa-chevron-left"></i> Trước
+                    </button>
+                `;
+            }
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentUserPage) {
+                    paginationHTML += `<button class="btn btn-primary btn-small">${i}</button>`;
+                } else if (i === 1 || i === totalPages || Math.abs(i - currentUserPage) <= 2) {
+                    paginationHTML += `<button class="btn btn-outline btn-small" onclick="changeUserPage(${i})">${i}</button>`;
+                } else if (i === currentUserPage - 3 || i === currentUserPage + 3) {
+                    paginationHTML += `<span>...</span>`;
+                }
+            }
+            
+            // Next button
+            if (currentUserPage < totalPages) {
+                paginationHTML += `
+                    <button class="btn btn-outline btn-small" onclick="changeUserPage(${currentUserPage + 1})">
+                        Sau <i class="fas fa-chevron-right"></i>
+                    </button>
+                `;
+            }
+            
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changeUserPage(page) {
+            currentUserPage = page;
+            renderUsersTable();
+            renderUsersPagination();
+        }
+
+        function openAddUserModal() {
+            document.getElementById('userModalTitle').textContent = 'Thêm người dùng mới';
+            document.getElementById('saveUserButtonText').textContent = 'Thêm người dùng';
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('userStatus').value = 'active';
+            document.getElementById('userRole').value = 'reader';
+            document.getElementById('userPassword').required = true;
+            document.getElementById('userModal').style.display = 'block';
+        }
+
+        function editUser(userId) {
+            const user = window.libraryApp.users.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('userModalTitle').textContent = 'Sửa thông tin người dùng';
+            document.getElementById('saveUserButtonText').textContent = 'Cập nhật';
+            
+            document.getElementById('userId').value = user.id;
+            document.getElementById('userName').value = user.name;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userPhone').value = user.phone || '';
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userStatus').value = user.status || 'active';
+            document.getElementById('userNotes').value = user.notes || '';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userPassword').required = false;
+            
+            document.getElementById('userModal').style.display = 'block';
+        }
+
+        function saveUser() {
+            const userId = document.getElementById('userId').value;
+            const userData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                phone: document.getElementById('userPhone').value,
+                role: document.getElementById('userRole').value,
+                status: document.getElementById('userStatus').value,
+                notes: document.getElementById('userNotes').value
+            };
+
+            if (userId) {
+                // Update existing user
+                const userIndex = window.libraryApp.users.findIndex(u => u.id === parseInt(userId));
+                if (userIndex !== -1) {
+                    window.libraryApp.users[userIndex] = { ...window.libraryApp.users[userIndex], ...userData };
+                    window.libraryApp.showAlert('Cập nhật người dùng thành công!');
+                }
+            } else {
+                // Add new user
+                const newUser = {
+                    id: window.libraryApp.users.length + 1,
+                    ...userData,
+                    joinDate: new Date().toISOString().split('T')[0]
+                };
+                window.libraryApp.users.push(newUser);
+                window.libraryApp.showAlert('Thêm người dùng thành công!');
+            }
+
+            closeModal('userModal');
+            loadUsersData();
+        }
+
+        function viewUserDetail(userId) {
+            const user = window.libraryApp.users.find(u => u.id === userId);
+            if (!user) return;
+
+            const userBorrows = window.libraryApp.borrowRecords.filter(r => r.userId === userId);
+            const currentBorrows = userBorrows.filter(r => r.status === 'borrowed');
+            
+            const modal = document.getElementById('userDetailModal');
+            const content = document.getElementById('userDetailContent');
+            
+            content.innerHTML = `
+                <div class="user-detail">
+                    <div class="user-header">
+                        <div class="user-avatar-large">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200&q=80" alt="${user.name}">
+                        </div>
+                        <div class="user-info">
+                            <h2>${user.name}</h2>
+                            <p><i class="fas fa-envelope"></i> ${user.email}</p>
+                            <p><i class="fas fa-phone"></i> ${user.phone || 'Chưa cập nhật'}</p>
+                            <p><i class="fas fa-calendar"></i> Tham gia: ${window.libraryApp.formatDate(user.joinDate)}</p>
+                            <span class="role-badge ${user.role}">${user.role === 'admin' ? 'Quản trị viên' : 'Độc giả'}</span>
+                            <span class="status-badge ${user.status || 'active'}">${getStatusText(user.status || 'active')}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="user-stats-detail">
+                        <div class="stat-item">
+                            <h4>${userBorrows.length}</h4>
+                            <p>Tổng lượt mượn</p>
+                        </div>
+                        <div class="stat-item">
+                            <h4>${currentBorrows.length}</h4>
+                            <p>Đang mượn</p>
+                        </div>
+                        <div class="stat-item">
+                            <h4>${userBorrows.filter(r => r.status === 'returned').length}</h4>
+                            <p>Đã trả</p>
+                        </div>
+                    </div>
+                    
+                    ${currentBorrows.length > 0 ? `
+                        <div class="current-borrows">
+                            <h4>Sách đang mượn</h4>
+                            <div class="borrowed-books">
+                                ${currentBorrows.map(record => {
+                                    const book = window.libraryApp.books.find(b => b.id === record.bookId);
+                                    return book ? `
+                                        <div class="borrowed-book-item">
+                                            <strong>${book.title}</strong>
+                                            <span>Mượn: ${window.libraryApp.formatDate(record.borrowDate)}</span>
+                                        </div>
+                                    ` : '';
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${user.notes ? `
+                        <div class="user-notes">
+                            <h4>Ghi chú</h4>
+                            <p>${user.notes}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function deleteUser(userId) {
+            userToDelete = userId;
+            document.getElementById('deleteUserModal').style.display = 'block';
+        }
+
+        function confirmUserDelete() {
+            if (userToDelete) {
+                const userIndex = window.libraryApp.users.findIndex(u => u.id === userToDelete);
+                if (userIndex !== -1) {
+                    window.libraryApp.users.splice(userIndex, 1);
+                    window.libraryApp.showAlert('Xóa người dùng thành công!');
+                    closeModal('deleteUserModal');
+                    loadUsersData();
+                    userToDelete = null;
+                }
+            }
+        }
+
+        function toggleSelectAllUsers() {
+            const selectAllCheckbox = document.getElementById('selectAllUsers');
+            const userCheckboxes = document.querySelectorAll('#usersTableBody input[type="checkbox"]');
+            
+            userCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                const userId = parseInt(checkbox.value);
+                if (selectAllCheckbox.checked) {
+                    selectedUsers.add(userId);
+                } else {
+                    selectedUsers.delete(userId);
+                }
+            });
+            
+            updateUserBulkActions();
+        }
+
+        function toggleUserSelect(userId) {
+            if (selectedUsers.has(userId)) {
+                selectedUsers.delete(userId);
+            } else {
+                selectedUsers.add(userId);
+            }
+            updateUserBulkActions();
+        }
+
+        function updateUserBulkActions() {
+            const bulkButtons = document.querySelectorAll('.bulk-actions button');
+            if (selectedUsers.size > 0) {
+                bulkButtons.forEach(btn => btn.style.display = 'inline-block');
+            } else {
+                bulkButtons.forEach(btn => btn.style.display = 'none');
+            }
+        }
+
+        function bulkUserAction(action) {
+            if (selectedUsers.size === 0) return;
+            
+            const selectedUsersArray = Array.from(selectedUsers);
+            
+            if (action === 'delete') {
+                if (confirm(`Bạn có chắc chắn muốn xóa ${selectedUsersArray.length} người dùng đã chọn?`)) {
+                    selectedUsersArray.forEach(userId => {
+                        const userIndex = window.libraryApp.users.findIndex(u => u.id === userId);
+                        if (userIndex !== -1) {
+                            window.libraryApp.users.splice(userIndex, 1);
+                        }
+                    });
+                    selectedUsers.clear();
+                    loadUsersData();
+                    window.libraryApp.showAlert(`Đã xóa ${selectedUsersArray.length} người dùng`);
+                }
+            } else {
+                const status = action === 'activate' ? 'active' : 'suspended';
+                selectedUsersArray.forEach(userId => {
+                    const user = window.libraryApp.users.find(u => u.id === userId);
+                    if (user) {
+                        user.status = status;
+                    }
+                });
+                selectedUsers.clear();
+                loadUsersData();
+                window.libraryApp.showAlert(`Đã ${action === 'activate' ? 'kích hoạt' : 'tạm khóa'} ${selectedUsersArray.length} người dùng`);
+            }
+        }
+    </script>
+
+    <style>
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-filters {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .borrowing-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .role-badge.admin {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .role-badge.reader {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .user-detail {
+            padding: 1rem;
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .user-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #667eea;
+        }
+
+        .user-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .user-info p {
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .user-info i {
+            margin-right: 0.5rem;
+            color: #667eea;
+            width: 16px;
+        }
+
+        .user-stats-detail {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-stats-detail .stat-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .user-stats-detail .stat-item h4 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-stats-detail .stat-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .current-borrows {
+            margin-bottom: 2rem;
+        }
+
+        .current-borrows h4 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .borrowed-books {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .borrowed-book-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .user-notes {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .user-notes h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .user-notes p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .user-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .user-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-stats-detail {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới thiệu - Thư viện Mini</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-book"></i>
+                <h1>Thư viện Mini</h1>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="books.html" class="nav-link">Sách</a>
+                <a href="about.html" class="nav-link active">Giới thiệu</a>
+                <a href="contact.html" class="nav-link">Liên hệ</a>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-outline" onclick="openLoginModal()">Đăng nhập</button>
+                <button class="btn btn-primary" onclick="openRegisterModal()">Đăng ký</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Về chúng tôi</h1>
+                    <p>Khám phá câu chuyện và sứ mệnh của Thư viện Mini</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Content -->
+        <section class="about-content">
+            <div class="container">
+                <div class="content-grid">
+                    <div class="content-text">
+                        <h2>Câu chuyện của chúng tôi</h2>
+                        <p>
+                            Thư viện Mini được thành lập vào năm 2020 với mong muốn tạo ra một không gian tri thức 
+                            hiện đại và dễ tiếp cận cho mọi người. Chúng tôi tin rằng việc đọc sách là chìa khóa 
+                            mở ra những cánh cửa tri thức và phát triển bản thân.
+                        </p>
+                        <p>
+                            Với hệ thống quản lý số hóa tiên tiến, chúng tôi mang đến trải nghiệm mượn và trả sách 
+                            thuận tiện, giúp độc giả dễ dàng tiếp cận với kho tàng sách phong phú.
+                        </p>
+                    </div>
+                    <div class="content-image">
+                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Thư viện">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission & Vision -->
+        <section class="mission-vision">
+            <div class="container">
+                <div class="mv-grid">
+                    <div class="mv-item">
+                        <div class="mv-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h3>Sứ mệnh</h3>
+                        <p>
+                            Tạo ra một cộng đồng yêu sách, nơi tri thức được chia sẻ và lan tỏa. 
+                            Chúng tôi cam kết mang đến những cuốn sách chất lượng và dịch vụ 
+                            thư viện tốt nhất cho độc giả.
+                        </p>
+                    </div>
+                    <div class="mv-item">
+                        <div class="mv-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3>Tầm nhìn</h3>
+                        <p>
+                            Trở thành thư viện số hiện đại hàng đầu, nơi mọi người có thể 
+                            dễ dàng tiếp cận tri thức và phát triển bản thân thông qua việc đọc sách.
+                        </p>
+                    </div>
+                    <div class="mv-item">
+                        <div class="mv-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Giá trị cốt lõi</h3>
+                        <p>
+                            Chúng tôi đề cao sự chia sẻ tri thức, tôn trọng độc giả và 
+                            không ngừng cải tiến để mang lại trải nghiệm tốt nhất.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-section">
+            <div class="container">
+                <h2>Điểm nổi bật của Thư viện Mini</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Kho sách phong phú">
+                        </div>
+                        <div class="feature-content">
+                            <h4>Kho sách phong phú</h4>
+                            <p>Hơn 1000 đầu sách đa dạng các thể loại: văn học, khoa học, kỹ năng sống, tiểu thuyết...</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Hệ thống số hóa">
+                        </div>
+                        <div class="feature-content">
+                            <h4>Hệ thống số hóa</h4>
+                            <p>Quản lý mượn trả sách hiện đại, tìm kiếm thông minh và thông báo tự động.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Không gian đọc">
+                        </div>
+                        <div class="feature-content">
+                            <h4>Không gian thoải mái</h4>
+                            <p>Môi trường đọc sách yên tĩnh, thoải mái với thiết kế hiện đại và ánh sáng tự nhiên.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Cộng đồng độc giả">
+                        </div>
+                        <div class="feature-content">
+                            <h4>Cộng đồng độc giả</h4>
+                            <p>Tham gia các hoạt động giao lưu, thảo luận sách và chia sẻ kinh nghiệm đọc.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team-section">
+            <div class="container">
+                <h2>Đội ngũ của chúng tôi</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Nguyễn Văn An">
+                        </div>
+                        <h4>Nguyễn Văn An</h4>
+                        <p class="member-role">Giám đốc Thư viện</p>
+                        <p class="member-description">
+                            Với hơn 10 năm kinh nghiệm trong lĩnh vực thư viện học, anh An luôn 
+                            đặt độc giả lên hàng đầu trong mọi quyết định.
+                        </p>
+                        <div class="member-social">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Trần Thị Mai">
+                        </div>
+                        <h4>Trần Thị Mai</h4>
+                        <p class="member-role">Trưởng phòng Dịch vụ</p>
+                        <p class="member-description">
+                            Chị Mai chuyên về dịch vụ độc giả và luôn tận tâm hỗ trợ mọi nhu cầu 
+                            của thành viên thư viện.
+                        </p>
+                        <div class="member-social">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Lê Hoàng Nam">
+                        </div>
+                        <h4>Lê Hoàng Nam</h4>
+                        <p class="member-role">Chuyên viên IT</p>
+                        <p class="member-description">
+                            Anh Nam phụ trách phát triển và duy trì hệ thống quản lý thư viện số, 
+                            đảm bảo hoạt động ổn định 24/7.
+                        </p>
+                        <div class="member-social">
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="about-statistics">
+            <div class="container">
+                <h2>Thành tựu của chúng tôi</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">1,245</div>
+                        <div class="stat-label">Đầu sách</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">567</div>
+                        <div class="stat-label">Thành viên</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">12,456</div>
+                        <div class="stat-label">Lượt mượn/năm</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Độ hài lòng</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h3>Đăng nhập</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="userType" value="reader" checked> Độc giả
+                    </label>
+                    <label>
+                        <input type="radio" name="userType" value="admin"> Quản trị viên
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h3>Đăng ký tài khoản</h3>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Họ và tên</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Số điện thoại</label>
+                    <input type="tel" id="registerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mật khẩu</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Thư viện Mini</h4>
+                    <p>Nơi tri thức hội tụ và lan tỏa</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên kết nhanh</h4>
+                    <ul>
+                        <li><a href="books.html">Danh sách sách</a></li>
+                        <li><a href="about.html">Giới thiệu</a></li>
+                        <li><a href="contact.html">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <p><i class="fas fa-phone"></i> (84) 123-456-789</p>
+                    <p><i class="fas fa-envelope"></i> info@thuvienMini.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Thư viện Mini. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+
+    <style>
+        .about-hero {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+                        url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .about-hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .about-hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        .about-content {
+            padding: 4rem 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .content-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .content-text p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        .content-image img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .mission-vision {
+            background: #f8f9fa;
+            padding: 4rem 0;
+        }
+
+        .mv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .mv-item {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .mv-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .mv-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 2rem;
+        }
+
+        .mv-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .mv-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .features-section {
+            padding: 4rem 0;
+        }
+
+        .features-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .feature-content {
+            padding: 2rem;
+        }
+
+        .feature-content h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .team-section {
+            background: #f8f9fa;
+            padding: 4rem 0;
+        }
+
+        .team-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .team-member {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+
+        .member-avatar {
+            margin-bottom: 1.5rem;
+        }
+
+        .member-avatar img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #667eea;
+        }
+
+        .team-member h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .member-role {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .member-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .member-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .member-social a {
+            background: #f8f9fa;
+            color: #667eea;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .member-social a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .about-statistics {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .about-statistics h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .about-statistics .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .about-statistics .stat-item {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .about-statistics .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffd700;
+        }
+
+        .about-statistics .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .mv-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
