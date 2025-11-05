@@ -1,17 +1,37 @@
-const test = require('node:test')
+import Fastify from 'fastify';
+import dotenv from 'dotenv';
+import { connectDB } from './src/database.js';
+import bookRoutes from './route/books.js';
+import formBody from '@fastify/formbody';
 
-// Require the framework and instantiate it
-const fastify = require('fastify')({ logger: true })
+dotenv.config();
 
-// Declare a route
-fastify.get('/', function handler (request, reply) {
-  reply.send({test: 'Thuc tap chuyen nganh'})
-})
+const fastify = Fastify({ logger: true });
 
-// Run the server!
-fastify.listen({ port: 3000 }, (err) => {
-  if (err) {
-    fastify.log.error(err)
-    process.exit(1)
+// Kết nối DB
+await connectDB();
+fastify.register(formBody);
+fastify.post('/test', async (req, reply) => {
+  console.log(req.body);
+  return { message: 'Đã nhận dữ liệu', data: req.body };
+});
+// Route test
+fastify.get('/', async () => {
+  return { message: 'Backend Fastify đã chạy!' };
+});
+
+// Sử dụng bookRoutes
+await fastify.register(bookRoutes);
+
+// Lắng nghe cổng
+const start = async () => {
+  try {
+    await fastify.listen({ port: process.env.PORT });
+    console.log(`🚀 Server đang chạy tại http://localhost:${process.env.PORT}`);
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
   }
-})
+};
+
+start();

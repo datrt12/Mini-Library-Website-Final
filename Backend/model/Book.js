@@ -1,0 +1,11 @@
+import mongoose from "mongoose";
+
+const bookSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  author: { type: String, required: true },
+  category: { type: String },
+  year: { type: Number },
+  available: { type: Boolean, default: true }
+});
+
+export const Book = mongoose.model("Book", bookSchema);
