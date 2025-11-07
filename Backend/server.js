@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import dotenv from 'dotenv';
 import { connectDB } from './src/database.js';
 import bookRoutes from './route/books.js';
+import borrowRoutes from './route/borrow.js';
 import formBody from '@fastify/formbody';
 
 dotenv.config();
@@ -21,6 +22,10 @@ fastify.get('/', async () => {
 
 // Đăng ký route sách
 await fastify.register(bookRoutes);
+await fastify.register(borrowRoutes);
+await fastify.register(bookRoutes, { prefix: '/books' });
+await fastify.register(borrowRoutes, { prefix: '/borrows' });
+
 
 const start = async () => {
   try {
