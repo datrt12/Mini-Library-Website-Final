@@ -10,7 +10,7 @@ export default async function borrowRoutes(fastify, options) {
 		const { id } = request.params;
 		const borrow = await BorrowBook.findById(id).populate("bookId").populate("userId");
 		if (!borrow) {
-			reply.code(404).send({ message: "Borrow record not found" });
+			reply.code(404).send({ message: "Không tìm thấy bản ghi mượn" });
 			return;
 		}
 		return borrow;
@@ -30,7 +30,7 @@ export default async function borrowRoutes(fastify, options) {
 		const { id } = request.params;
 		const updated = await BorrowBook.findByIdAndUpdate(id, request.body, { new: true });
 		if (!updated) {
-			reply.code(404).send({ message: "Borrow record not found" });
+			reply.code(404).send({ message: "Không tìm thấy bản ghi mượn" });
 			return;
 		}
 		return updated;
