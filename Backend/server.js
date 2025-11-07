@@ -8,7 +8,6 @@ dotenv.config();
 
 const fastify = Fastify({ logger: true });
 
-// Kết nối DB
 await connectDB();
 fastify.register(formBody);
 fastify.post('/test', async (req, reply) => {
@@ -20,14 +19,13 @@ fastify.get('/', async () => {
   return { message: 'Backend Fastify đã chạy!' };
 });
 
-// Sử dụng bookRoutes
+// Đăng ký route sách
 await fastify.register(bookRoutes);
 
-// Lắng nghe cổng
 const start = async () => {
   try {
     await fastify.listen({ port: process.env.PORT });
-    console.log(`🚀 Server đang chạy tại http://localhost:${process.env.PORT}`);
+    console.log(`Server đang chạy tại http://localhost:${process.env.PORT}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
