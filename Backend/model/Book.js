@@ -5,10 +5,9 @@ const bookSchema = new mongoose.Schema({
   bookID: { type: String, required: true, unique: true },
   author: { type: String, required: true },
   category: { type: String },
+  description: { type: String },
   year: { type: Number },
   available: { type: Boolean, default: true },
-  // image can be a URL or a base64 data URL
-  image: { type: String }
 });
 
 export const Book = mongoose.model("Book", bookSchema);
