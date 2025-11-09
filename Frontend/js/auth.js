@@ -9,15 +9,17 @@ const registerForm = qs('#register-form');
 if (registerForm) {
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = qs('#username').value.trim();
-    const password = qs('#password').value.trim();
+  const username = qs('#username').value.trim();
+  const password = qs('#password').value.trim();
+  const roleEl = qs('#role');
+  const role = roleEl ? roleEl.value : undefined;
     // Optional email not used in backend schema; ignoring for now
     if(!username || !password){alert('Nhập đầy đủ tên và mật khẩu');return;}
     try {
       const res = await fetch(`${API_BASE}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password, ...(role ? { role } : {}) })
       });
       const data = await res.json().catch(()=>({}));
       if(!res.ok){alert(data.message || 'Đăng ký thất bại');return;}
@@ -49,7 +51,19 @@ if (loginForm) {
       if(data.token){
         localStorage.setItem('authToken', data.token);
         alert('Đăng nhập thành công');
-        window.location.href = 'admin.html';
+        // Decode role and route accordingly
+        try {
+          const parts = data.token.split('.');
+          const payload = JSON.parse(atob(parts[1]));
+          const role = payload.role;
+          if(role === 'admin'){
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch(_){
+          window.location.href = 'index.html';
+        }
       } else {
         alert('Không nhận được token');
       }

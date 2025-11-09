@@ -1,3 +1,6 @@
+// Base API (backend)
+const API_BASE = 'http://localhost:3000';
+
 // Utility: get auth token (assumes stored in localStorage under 'authToken')
 function getAuthToken() { return localStorage.getItem('authToken') || ''; }
 
@@ -10,7 +13,7 @@ function escapeHtml(str) {
 async function fetchBooksAdmin() {
   const token = getAuthToken();
   try {
-    const res = await fetch('/books', { headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) } });
+  const res = await fetch(`${API_BASE}/books`, { headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) } });
     if (!res.ok) {
       booksTableBody.innerHTML = '<tr><td colspan="9">Không thể tải danh sách sách.</td></tr>';
       console.error('Fetch books failed', res.status, res.statusText);
@@ -26,8 +29,9 @@ async function fetchBooksAdmin() {
       const category = book.category || '';
       const year = book.year || '';
       const available = (typeof book.available === 'boolean') ? (book.available ? 'Có' : 'Không') : '';
-      const image = book.image || '';
-      const imgCell = image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" style="width:50px;height:70px;object-fit:cover;border-radius:4px;"/>` : '<span style="font-size:12px;color:#888;">Không ảnh</span>';
+  const image = book.image || '';
+  const imgSrc = image && image.startsWith('img/') ? ('../' + image) : image;
+  const imgCell = image ? `<img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(title)}" style="width:50px;height:70px;object-fit:cover;border-radius:4px;"/>` : '<span style="font-size:12px;color:#888;">Không ảnh</span>';
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${escapeHtml(id)}</td>
@@ -68,7 +72,7 @@ async function onDeleteClick(e) {
   if (!confirm('Bạn có chắc muốn xóa sách này?')) return;
   const token = getAuthToken();
   try {
-    const res = await fetch(`/books/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) } });
+  const res = await fetch(`${API_BASE}/books/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) } });
     const body = await res.json().catch(() => ({}));
     if (res.ok) {
       alert('Đã xóa sách');
@@ -129,13 +133,13 @@ addBookForm?.addEventListener('submit', async (e) => {
   const urlVal = imageUrlInput?.value.trim();
   try {
     if (file) {
-      const fd = new FormData(); fd.append('file', file);
-      const upRes = await fetch('/books/upload', { method: 'POST', body: fd });
+  const fd = new FormData(); fd.append('file', file);
+  const upRes = await fetch(`${API_BASE}/books/upload`, { method: 'POST', headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: fd });
       const upJson = await upRes.json();
       if (!upRes.ok || !upJson.image) { alert(upJson.message || 'Upload ảnh thất bại'); return; }
       imageField = upJson.image;
     } else if (urlVal) {
-      const upRes = await fetch('/books/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageUrl: urlVal }) });
+  const upRes = await fetch(`${API_BASE}/books/upload`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify({ imageUrl: urlVal }) });
       const upJson = await upRes.json();
       if (!upRes.ok || !upJson.image) { alert(upJson.message || 'Tải ảnh URL thất bại'); return; }
       imageField = upJson.image;
@@ -143,18 +147,35 @@ addBookForm?.addEventListener('submit', async (e) => {
       // Keep existing
       const existingRow = [...booksTableBody.querySelectorAll('tr')].find(r => r.querySelector('.btn-edit-book')?.getAttribute('data-id') === editingBookId);
       const existingImg = existingRow?.querySelector('img');
-      if (existingImg) imageField = existingImg.getAttribute('src');
+      if (existingImg) {
+        let src = existingImg.getAttribute('src') || '';
+        // normalize '../img/...' -> 'img/...'
+        const idx = src.lastIndexOf('/img/');
+        if (idx !== -1) src = src.substring(idx + 1); // drop leading path up to 'img/...'
+        imageField = src;
+      }
     }
   } catch (imgErr) { console.error('Image error', imgErr); alert('Lỗi xử lý ảnh'); return; }
 
   const payload = { title, bookID, author, category, year, available, ...(imageField ? { image: imageField } : {}) };
   const token = getAuthToken();
   const method = editingBookId ? 'PUT' : 'POST';
-  const endpoint = editingBookId ? `/books/${editingBookId}` : '/books';
+  const endpoint = editingBookId ? `${API_BASE}/books/${editingBookId}` : `${API_BASE}/books`;
   try {
     const res = await fetch(endpoint, { method, headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify(payload) });
     const body = await res.json().catch(() => ({}));
-    if (!res.ok) { alert(body.message || (editingBookId ? 'Cập nhật thất bại' : 'Thêm sách thất bại')); return; }
+    if (!res.ok) {
+      if (res.status === 401) {
+        alert('Chưa đăng nhập hoặc token hết hạn. Vui lòng đăng nhập lại.');
+      } else if (res.status === 403) {
+        alert('Tài khoản không có quyền admin. Không thể thêm/sửa sách.');
+      } else if (res.status === 400) {
+        alert(body.message || 'Dữ liệu không hợp lệ (thiếu tiêu đề/tác giả hoặc mã sách trùng).');
+      } else {
+        alert(body.message || (editingBookId ? 'Cập nhật thất bại' : 'Thêm sách thất bại'));
+      }
+      return;
+    }
     addBookForm.reset();
     if (imageUrlInput) imageUrlInput.value = '';
     if (imageFileInput) imageFileInput.value = '';

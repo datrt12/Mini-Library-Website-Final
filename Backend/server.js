@@ -11,6 +11,7 @@ import fastifyMultipart from '@fastify/multipart';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
+import { requireAuth, requireRole } from './error/auth.js';
 
 dotenv.config();
 
@@ -96,6 +97,12 @@ fastify.get('/ui/*', async (req, reply) => {
   const abs = safeJoin(UI_DIR, rel);
   if (!abs) return reply.code(400).send('Bad Request');
   return sendStatic(reply, abs);
+});
+
+// Explicit admin page protection BEFORE generic file serving (so direct /admin.html also blocked)
+fastify.get('/ui/admin.html', { preHandler: [requireAuth, requireRole('admin')] }, async (req, reply) => {
+  const filePath = path.join(UI_DIR, 'admin.html');
+  return sendStatic(reply, filePath);
 });
 
 // Serve css/js/img from Frontend directory
