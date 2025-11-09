@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên hệ - Thư viện Mini</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-book"></i>
+                <h1>Thư viện Mini</h1>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="books.html" class="nav-link">Sách</a>
+                <a href="about.html" class="nav-link">Giới thiệu</a>
+                <a href="contact.html" class="nav-link active">Liên hệ</a>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-outline" onclick="openLoginModal()">Đăng nhập</button>
+                <button class="btn btn-primary" onclick="openRegisterModal()">Đăng ký</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="page-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Liên hệ với chúng tôi</h1>
+                    <p>Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Content -->
+        <section class="contact-content">
+            <div class="container">
+                <div class="contact-grid">
+                    <!-- Contact Info -->
+                    <div class="contact-info">
+                        <h2>Thông tin liên hệ</h2>
+                        <div class="info-items">
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h4>Địa chỉ</h4>
+                                    <p>123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h4>Điện thoại</h4>
+                                    <p>(84) 123-456-789</p>
+                                    <p>(84) 987-654-321</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h4>Email</h4>
+                                    <p>info@thuvienMini.com</p>
+                                    <p>support@thuvienMini.com</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h4>Giờ làm việc</h4>
+                                    <p>Thứ 2 - Thứ 6: 8:00 - 20:00</p>
+                                    <p>Thứ 7 - Chủ nhật: 9:00 - 18:00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Media -->
+                        <div class="social-media">
+                            <h4>Theo dõi chúng tôi</h4>
+                            <div class="social-links">
+                                <a href="#" class="social-link facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-link twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-link instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="social-link youtube">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="contact-form">
+                        <h2>Gửi tin nhắn</h2>
+                        <form id="contactForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="name">Họ và tên *</label>
+                                    <input type="text" id="name" name="name" required>
+                                    <div class="form-error" id="nameError">Vui lòng nhập họ và tên</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email *</label>
+                                    <input type="email" id="email" name="email" required>
+                                    <div class="form-error" id="emailError">Vui lòng nhập email hợp lệ</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">Số điện thoại</label>
+                                    <input type="tel" id="phone" name="phone">
+                                    <div class="form-error" id="phoneError">Số điện thoại không hợp lệ</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="subject">Chủ đề *</label>
+                                    <select id="subject" name="subject" required>
+                                        <option value="">Chọn chủ đề</option>
+                                        <option value="general">Hỏi đáp chung</option>
+                                        <option value="library">Thông tin thư viện</option>
+                                        <option value="account">Vấn đề tài khoản</option>
+                                        <option value="technical">Hỗ trợ kỹ thuật</option>
+                                        <option value="suggestion">Góp ý, đề xuất</option>
+                                    </select>
+                                    <div class="form-error" id="subjectError">Vui lòng chọn chủ đề</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message">Tin nhắn *</label>
+                                <textarea id="message" name="message" rows="6" required placeholder="Nhập tin nhắn của bạn..."></textarea>
+                                <div class="form-error" id="messageError">Vui lòng nhập tin nhắn</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                                Gửi tin nhắn
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Câu hỏi thường gặp</h2>
+                    <p>Tìm câu trả lời cho những thắc mắc phổ biến</p>
+                </div>
+                
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4>Làm thế nào để đăng ký tài khoản thư viện?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Bạn có thể đăng ký tài khoản bằng cách click vào nút "Đăng ký" trên trang chủ và điền đầy đủ thông tin cá nhân. Sau khi đăng ký thành công, bạn có thể đăng nhập và sử dụng các dịch vụ của thư viện.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4>Thời hạn mượn sách là bao lâu?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Thời hạn mượn sách tiêu chuẩn là 14 ngày. Bạn có thể gia hạn thêm 7 ngày nếu không có người khác đặt trước cuốn sách đó. Vui lòng trả sách đúng hạn để tránh bị phạt.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4>Có thể mượn bao nhiêu cuốn sách cùng lúc?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Mỗi độc giả có thể mượn tối đa 5 cuốn sách cùng lúc. Sau khi trả sách, bạn có thể mượn thêm sách khác. Đối với sách tham khảo quý hiếm, số lượng có thể được giới hạn ít hơn.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4>Làm thế nào để tìm kiếm sách?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Bạn có thể sử dụng thanh tìm kiếm trên trang chủ để tìm sách theo tên, tác giả hoặc thể loại. Hệ thống cũng hỗ trợ bộ lọc nâng cao để thu hẹp kết quả tìm kiếm theo ý muốn.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4>Tôi có thể đặt trước sách đang được mượn không?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Hiện tại hệ thống chưa hỗ trợ tính năng đặt trước sách. Bạn có thể theo dõi trạng thái sách và quay lại kiểm tra khi sách đã được trả. Chúng tôi đang phát triển tính năng này.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Thư viện Mini</h4>
+                    <p>Nơi tri thức hội tụ và lan tỏa</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên kết nhanh</h4>
+                    <ul>
+                        <li><a href="books.html">Danh sách sách</a></li>
+                        <li><a href="about.html">Giới thiệu</a></li>
+                        <li><a href="contact.html">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <p><i class="fas fa-phone"></i> (84) 123-456-789</p>
+                    <p><i class="fas fa-envelope"></i> info@thuvienMini.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Thư viện Mini. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h3><i class="fas fa-sign-in-alt"></i> Đăng nhập</h3>
+            <div class="demo-accounts">
+                <h4>Tài khoản demo để test:</h4>
+                <p><strong>Admin:</strong> admin@library.com / admin123</p>
+                <p><strong>Độc giả:</strong> reader@library.com / reader123</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" name="email" required>
+                    <div class="form-error" id="loginEmailError">Email không hợp lệ</div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                    <div class="form-error" id="loginPasswordError">Vui lòng nhập mật khẩu</div>
+                </div>
+                <div class="form-group">
+                    <label for="userType">Loại tài khoản:</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">Chọn loại tài khoản</option>
+                        <option value="reader">Độc giả</option>
+                        <option value="admin">Quản trị viên</option>
+                    </select>
+                    <div class="form-error" id="userTypeError">Vui lòng chọn loại tài khoản</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng nhập</button>
+            </form>
+            <p class="modal-footer">
+                Chưa có tài khoản? <a href="#" onclick="closeModal('loginModal'); openRegisterModal()">Đăng ký ngay</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h3><i class="fas fa-user-plus"></i> Đăng ký tài khoản</h3>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regName">Họ và tên:</label>
+                    <input type="text" id="regName" name="name" required>
+                    <div class="form-error" id="regNameError">Vui lòng nhập họ và tên</div>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="email" required>
+                    <div class="form-error" id="regEmailError">Email không hợp lệ</div>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Mật khẩu:</label>
+                    <input type="password" id="regPassword" name="password" required>
+                    <div class="form-error" id="regPasswordError">Mật khẩu phải có ít nhất 6 ký tự</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng ký</button>
+            </form>
+            <p class="modal-footer">
+                Đã có tài khoản? <a href="#" onclick="closeModal('registerModal'); openLoginModal()">Đăng nhập</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Contact form validation
+        function clearErrors() {
+            document.querySelectorAll('.form-error').forEach(error => error.classList.remove('show'));
+            document.querySelectorAll('.contact-form input, .contact-form select, .contact-form textarea').forEach(field => {
+                field.classList.remove('error', 'success');
+            });
+        }
+
+        function showFieldError(fieldId, errorId, message) {
+            const field = document.getElementById(fieldId);
+            const error = document.getElementById(errorId);
+            field.classList.add('error');
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        function showFieldSuccess(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.classList.remove('error');
+            field.classList.add('success');
+        }
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            clearErrors();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            let isValid = true;
+            
+            // Validate name
+            if (!data.name || data.name.trim().length < 2) {
+                showFieldError('name', 'nameError', 'Vui lòng nhập họ và tên (ít nhất 2 ký tự)');
+                isValid = false;
+            } else {
+                showFieldSuccess('name');
+            }
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!data.email) {
+                showFieldError('email', 'emailError', 'Vui lòng nhập email');
+                isValid = false;
+            } else if (!emailRegex.test(data.email)) {
+                showFieldError('email', 'emailError', 'Email không đúng định dạng');
+                isValid = false;
+            } else {
+                showFieldSuccess('email');
+            }
+            
+            // Validate phone (if provided)
+            if (data.phone && data.phone.trim()) {
+                const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+                if (!phoneRegex.test(data.phone) || data.phone.length < 10) {
+                    showFieldError('phone', 'phoneError', 'Số điện thoại không hợp lệ (ít nhất 10 số)');
+                    isValid = false;
+                } else {
+                    showFieldSuccess('phone');
+                }
+            }
+            
+            // Validate subject
+            if (!data.subject) {
+                showFieldError('subject', 'subjectError', 'Vui lòng chọn chủ đề');
+                isValid = false;
+            } else {
+                showFieldSuccess('subject');
+            }
+            
+            // Validate message
+            if (!data.message || data.message.trim().length < 10) {
+                showFieldError('message', 'messageError', 'Vui lòng nhập tin nhắn (ít nhất 10 ký tự)');
+                isValid = false;
+            } else {
+                showFieldSuccess('message');
+            }
+            
+            if (!isValid) {
+                showAlert('Vui lòng kiểm tra lại thông tin!', 'error');
+                return;
+            }
+            
+            // Simulate form submission
+            showAlert('Cảm ơn bạn đã gửi tin nhắn! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.', 'success');
+            this.reset();
+            clearErrors();
+        });
+
+        // FAQ toggle function
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            
+            // Close other FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                    const otherAnswer = item.querySelector('.faq-answer');
+                    const otherIcon = item.querySelector('.faq-question i');
+                    otherAnswer.style.maxHeight = '0px';
+                    otherIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            // Toggle current FAQ
+            if (faqItem.classList.contains('active')) {
+                faqItem.classList.remove('active');
+                answer.style.maxHeight = '0px';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                faqItem.classList.add('active');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Modal form validation functions
+        function clearModalErrors(formId) {
+            document.querySelectorAll(`#${formId} .form-error`).forEach(error => error.classList.remove('show'));
+            document.querySelectorAll(`#${formId} input, #${formId} select`).forEach(field => {
+                field.classList.remove('error', 'success');
+            });
+        }
+
+        function showModalFieldError(fieldId, errorId, message) {
+            const field = document.getElementById(fieldId);
+            const error = document.getElementById(errorId);
+            field.classList.add('error');
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        function showModalFieldSuccess(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.classList.remove('error');
+            field.classList.add('success');
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            clearModalErrors('loginModal');
+            
+            const formData = new FormData(this);
+            const email = formData.get('email');
+            const password = formData.get('password');
+            const userType = formData.get('userType');
+            
+            let isValid = true;
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                showModalFieldError('loginEmail', 'loginEmailError', 'Vui lòng nhập email');
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                showModalFieldError('loginEmail', 'loginEmailError', 'Email không đúng định dạng');
+                isValid = false;
+            } else {
+                showModalFieldSuccess('loginEmail');
+            }
+            
+            // Validate password
+            if (!password) {
+                showModalFieldError('loginPassword', 'loginPasswordError', 'Vui lòng nhập mật khẩu');
+                isValid = false;
+            } else if (password.length < 3) {
+                showModalFieldError('loginPassword', 'loginPasswordError', 'Mật khẩu quá ngắn');
+                isValid = false;
+            } else {
+                showModalFieldSuccess('loginPassword');
+            }
+            
+            // Validate user type
+            if (!userType) {
+                showModalFieldError('userType', 'userTypeError', 'Vui lòng chọn loại tài khoản');
+                isValid = false;
+            } else {
+                showModalFieldSuccess('userType');
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            if (window.login) {
+                window.login(email, password, userType);
+            }
+        });
+
+        // Register form handler
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            clearModalErrors('registerModal');
+            
+            const formData = new FormData(this);
+            const name = formData.get('name');
+            const email = formData.get('email');
+            const password = formData.get('password');
+            
+            let isValid = true;
+            
+            // Validate name
+            if (!name || name.trim().length < 2) {
+                showModalFieldError('regName', 'regNameError', 'Vui lòng nhập họ và tên (ít nhất 2 ký tự)');
+                isValid = false;
+            } else {
+                showModalFieldSuccess('regName');
+            }
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                showModalFieldError('regEmail', 'regEmailError', 'Vui lòng nhập email');
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                showModalFieldError('regEmail', 'regEmailError', 'Email không đúng định dạng');
+                isValid = false;
+            } else {
+                showModalFieldSuccess('regEmail');
+            }
+            
+            // Validate password
+            if (!password) {
+                showModalFieldError('regPassword', 'regPasswordError', 'Vui lòng nhập mật khẩu');
+                isValid = false;
+            } else if (password.length < 6) {
+                showModalFieldError('regPassword', 'regPasswordError', 'Mật khẩu phải có ít nhất 6 ký tự');
+                isValid = false;
+            } else {
+                showModalFieldSuccess('regPassword');
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            const userData = {
+                name: name,
+                email: email,
+                phone: '',
+                password: password
+            };
+            
+            if (window.register) {
+                window.register(userData);
+            }
+        });
+    </script>
+</body>
+</html>

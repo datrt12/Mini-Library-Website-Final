@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Quản trị - Thư viện Mini</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-book"></i>
+                <h1>Thư viện Mini - Admin</h1>
+            </div>
+            <nav class="nav">
+                <a href="admin-dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="admin-books.html" class="nav-link">Quản lý sách</a>
+                <a href="admin-users.html" class="nav-link">Quản lý người dùng</a>
+                <a href="admin-borrows.html" class="nav-link">Quản lý mượn trả</a>
+                <a href="admin-reports.html" class="nav-link">Báo cáo</a>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-outline" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="dashboard-welcome">
+                <h2>Chào mừng trở lại, Admin!</h2>
+                <p>Tổng quan hoạt động thư viện hôm nay</p>
+            </section>
+
+            <!-- Statistics Cards -->
+            <section class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalBooks">0</h3>
+                        <p>Tổng số sách</p>
+                        <small class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> +5 sách mới
+                        </small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Độc giả đăng ký</p>
+                        <small class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> +3 thành viên mới
+                        </small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-hand-holding"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="currentBorrows">0</h3>
+                        <p>Đang mượn</p>
+                        <small class="stat-change neutral">
+                            <i class="fas fa-minus"></i> Không thay đổi
+                        </small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalBorrows">0</h3>
+                        <p>Tổng lượt mượn</p>
+                        <small class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> +12 lượt mượn
+                        </small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-bolt"></i> Thao tác nhanh</h3>
+                    <div class="actions-grid">
+                        <button class="action-btn" onclick="openAddBookModal()">
+                            <i class="fas fa-plus"></i>
+                            <span>Thêm sách mới</span>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='admin-users.html'">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Quản lý người dùng</span>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='admin-borrows.html'">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Xử lý mượn trả</span>
+                        </button>
+                        <button class="action-btn" onclick="exportReport()">
+                            <i class="fas fa-download"></i>
+                            <span>Xuất báo cáo</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activities and Popular Books -->
+            <div class="dashboard-row">
+                <!-- Recent Borrows -->
+                <section class="dashboard-card">
+                    <h3><i class="fas fa-history"></i> Hoạt động mượn trả gần đây</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Độc giả</th>
+                                    <th>Sách</th>
+                                    <th>Ngày mượn</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentBorrowsTable">
+                                <!-- Data will be loaded by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Popular Books -->
+                <section class="dashboard-card">
+                    <h3><i class="fas fa-fire"></i> Sách phổ biến</h3>
+                    <div id="popularBooksList" class="popular-books">
+                        <!-- Data will be loaded by JavaScript -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-chart-bar"></i> Thống kê mượn sách theo tháng</h3>
+                    <canvas id="borrowChart" width="400" height="200"></canvas>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add Book Modal -->
+    <div id="addBookModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addBookModal')">&times;</span>
+            <h3>Thêm sách mới</h3>
+            <form id="addBookForm">
+                <div class="form-group">
+                    <label for="bookTitle">Tên sách</label>
+                    <input type="text" id="bookTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookAuthor">Tác giả</label>
+                    <input type="text" id="bookAuthor" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookCategory">Thể loại</label>
+                    <select id="bookCategory" required>
+                        <option value="">Chọn thể loại</option>
+                        <option value="Kỹ năng sống">Kỹ năng sống</option>
+                        <option value="Phát triển bản thân">Phát triển bản thân</option>
+                        <option value="Tiểu thuyết">Tiểu thuyết</option>
+                        <option value="Lịch sử">Lịch sử</option>
+                        <option value="Khoa học">Khoa học</option>
+                        <option value="Văn học">Văn học</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bookDescription">Mô tả</label>
+                    <textarea id="bookDescription" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="bookImage">URL hình ảnh</label>
+                    <input type="url" id="bookImage" placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Thêm sách</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check admin authentication
+            if (!window.libraryApp.currentUser || window.libraryApp.currentUser.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            loadDashboardData();
+            setupEventListeners();
+        });
+
+        function loadDashboardData() {
+            const stats = window.libraryApp.getStatistics();
+            
+            // Update statistics
+            document.getElementById('totalBooks').textContent = stats.totalBooks;
+            document.getElementById('totalUsers').textContent = stats.totalUsers;
+            document.getElementById('currentBorrows').textContent = stats.borrowedBooks;
+            document.getElementById('totalBorrows').textContent = stats.totalBorrows;
+            
+            // Load recent borrows
+            loadRecentBorrows();
+            
+            // Load popular books
+            loadPopularBooks();
+            
+            // Load chart
+            loadBorrowChart();
+        }
+
+        function loadRecentBorrows() {
+            const recentBorrows = window.libraryApp.getRecentBorrows(5);
+            const tbody = document.getElementById('recentBorrowsTable');
+            
+            if (recentBorrows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Chưa có hoạt động mượn trả nào</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = recentBorrows.map(record => `
+                <tr>
+                    <td>${record.userName}</td>
+                    <td>${record.bookTitle}</td>
+                    <td>${window.libraryApp.formatDate(record.borrowDate)}</td>
+                    <td>
+                        <span class="status-badge ${record.status}">
+                            ${record.status === 'borrowed' ? 'Đang mượn' : 'Đã trả'}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        ${record.status === 'borrowed' ? 
+                            `<button class="btn btn-success btn-small" onclick="markAsReturned(${record.id})">
+                                <i class="fas fa-check"></i> Đánh dấu đã trả
+                            </button>` :
+                            `<span class="text-muted">Đã hoàn thành</span>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadPopularBooks() {
+            const popularBooks = window.libraryApp.getMostPopularBooks(5);
+            const container = document.getElementById('popularBooksList');
+            
+            if (popularBooks.length === 0) {
+                container.innerHTML = '<p>Chưa có dữ liệu thống kê</p>';
+                return;
+            }
+            
+            container.innerHTML = popularBooks.map((book, index) => `
+                <div class="popular-book-item">
+                    <div class="book-rank">${index + 1}</div>
+                    <div class="book-info">
+                        <h4>${book.title}</h4>
+                        <p>${book.author}</p>
+                        <small>${book.borrowCount || 0} lượt mượn</small>
+                    </div>
+                    <div class="book-status ${book.status}">
+                        ${book.status === 'available' ? 'Có sẵn' : 'Đang mượn'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadBorrowChart() {
+            const canvas = document.getElementById('borrowChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Simple chart implementation
+            const months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+            const data = [15, 25, 18, 32, 28, 35, 42, 38, 45, 40, 35, 30]; // Sample data
+            
+            const maxValue = Math.max(...data);
+            const chartHeight = canvas.height - 60;
+            const chartWidth = canvas.width - 80;
+            const barWidth = chartWidth / months.length - 10;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw bars
+            ctx.fillStyle = '#667eea';
+            data.forEach((value, index) => {
+                const barHeight = (value / maxValue) * chartHeight;
+                const x = 40 + index * (barWidth + 10);
+                const y = canvas.height - 40 - barHeight;
+                
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Draw value on top
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(value, x + barWidth / 2, y - 5);
+                
+                // Draw month label
+                ctx.fillText(months[index], x + barWidth / 2, canvas.height - 20);
+                
+                ctx.fillStyle = '#667eea';
+            });
+        }
+
+        function setupEventListeners() {
+            // Add book form
+            const addBookForm = document.getElementById('addBookForm');
+            addBookForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const bookData = {
+                    title: document.getElementById('bookTitle').value,
+                    author: document.getElementById('bookAuthor').value,
+                    category: document.getElementById('bookCategory').value,
+                    description: document.getElementById('bookDescription').value,
+                    image: document.getElementById('bookImage').value || 
+                           `https://via.placeholder.com/200x280/667eea/ffffff?text=${encodeURIComponent(document.getElementById('bookTitle').value)}`
+                };
+                
+                if (window.libraryApp.addBook(bookData)) {
+                    closeModal('addBookModal');
+                    addBookForm.reset();
+                    loadDashboardData(); // Refresh data
+                }
+            });
+        }
+
+        function openAddBookModal() {
+            document.getElementById('addBookModal').style.display = 'block';
+        }
+
+        function markAsReturned(recordId) {
+            const record = window.libraryApp.borrowRecords.find(r => r.id === recordId);
+            if (record) {
+                window.libraryApp.returnBook(record.bookId);
+                loadDashboardData(); // Refresh data
+            }
+        }
+
+        function exportReport() {
+            const stats = window.libraryApp.getStatistics();
+            const popularBooks = window.libraryApp.getMostPopularBooks();
+            
+            let report = 'BÁO CÁO THỐNG KÊ THƯ VIỆN\n';
+            report += '================================\n\n';
+            report += `Tổng số sách: ${stats.totalBooks}\n`;
+            report += `Số độc giả: ${stats.totalUsers}\n`;
+            report += `Sách đang mượn: ${stats.borrowedBooks}\n`;
+            report += `Tổng lượt mượn: ${stats.totalBorrows}\n\n`;
+            
+            report += 'SÁCH PHỔ BIẾN:\n';
+            popularBooks.forEach((book, index) => {
+                report += `${index + 1}. ${book.title} - ${book.borrowCount || 0} lượt\n`;
+            });
+            
+            // Create and download file
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bao-cao-thu-vien-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            window.libraryApp.showAlert('Đã xuất báo cáo thành công!');
+        }
+
+        // Auto refresh data every 5 minutes
+        setInterval(loadDashboardData, 300000);
+    </script>
+
+    <style>
+        .dashboard-welcome {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .dashboard-welcome h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .stat-info p {
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            color: #51cf66;
+        }
+
+        .stat-change.negative {
+            color: #ff6b6b;
+        }
+
+        .stat-change.neutral {
+            color: #999;
+        }
+
+        .quick-actions {
+            margin-bottom: 3rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-3px);
+        }
+
+        .action-btn i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-btn span {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .popular-books {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .popular-book-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .popular-book-item:last-child {
+            border-bottom: none;
+        }
+
+        .book-rank {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .popular-book-item .book-info {
+            flex: 1;
+        }
+
+        .popular-book-item .book-info h4 {
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .popular-book-item .book-info p {
+            color: #667eea;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .popular-book-item .book-info small {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .charts-section {
+            margin-bottom: 3rem;
+        }
+
+        .charts-section canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</body>
+</html>

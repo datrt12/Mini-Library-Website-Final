@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý mượn trả - Thư viện Mini</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-book"></i>
+                <h1>Thư viện Mini - Admin</h1>
+            </div>
+            <nav class="nav">
+                <a href="admin-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="admin-books.html" class="nav-link">Quản lý sách</a>
+                <a href="admin-users.html" class="nav-link">Quản lý người dùng</a>
+                <a href="admin-borrows.html" class="nav-link active">Quản lý mượn trả</a>
+                <a href="admin-reports.html" class="nav-link">Báo cáo</a>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-outline" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h2><i class="fas fa-exchange-alt"></i> Quản lý mượn trả</h2>
+                    <p>Theo dõi và quản lý tất cả các giao dịch mượn trả sách trong thư viện</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAddBorrowModal()">
+                    <i class="fas fa-plus"></i> Tạo phiếu mượn
+                </button>
+            </section>
+
+            <!-- Borrow Statistics -->
+            <section class="borrow-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeBorrowsCount">0</h3>
+                        <p>Đang mượn</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="overdueBorrowsCount">0</h3>
+                        <p>Quá hạn</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="returnedTodayCount">0</h3>
+                        <p>Trả hôm nay</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="borrowedTodayCount">0</h3>
+                        <p>Mượn hôm nay</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="borrow-filters">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="borrowSearch">Tìm kiếm</label>
+                        <input type="text" id="borrowSearch" placeholder="Tên sách, người mượn...">
+                    </div>
+                    <div class="form-group">
+                        <label for="statusFilter">Trạng thái</label>
+                        <select id="statusFilter">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="borrowed">Đang mượn</option>
+                            <option value="returned">Đã trả</option>
+                            <option value="overdue">Quá hạn</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateFilter">Ngày</label>
+                        <select id="dateFilter">
+                            <option value="">Tất cả</option>
+                            <option value="today">Hôm nay</option>
+                            <option value="week">Tuần này</option>
+                            <option value="month">Tháng này</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="applyBorrowFilters()">
+                            <i class="fas fa-search"></i> Lọc
+                        </button>
+                        <button class="btn btn-outline" onclick="clearBorrowFilters()">
+                            <i class="fas fa-times"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <h3>Thao tác nhanh</h3>
+                <div class="action-cards">
+                    <div class="action-card" onclick="showOverdueBooks()">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h4>Sách quá hạn</h4>
+                        <p>Xem danh sách sách quá hạn trả</p>
+                    </div>
+                    <div class="action-card" onclick="showReturnsDueToday()">
+                        <i class="fas fa-calendar-check"></i>
+                        <h4>Hạn trả hôm nay</h4>
+                        <p>Các sách cần trả trong ngày</p>
+                    </div>
+                    <div class="action-card" onclick="showPopularBooks()">
+                        <i class="fas fa-star"></i>
+                        <h4>Sách phổ biến</h4>
+                        <p>Thống kê sách được mượn nhiều</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Borrows Table -->
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Danh sách mượn trả</h3>
+                    <div class="bulk-actions">
+                        <button class="btn btn-success btn-small" onclick="bulkReturn()" style="display: none;">
+                            <i class="fas fa-undo"></i> Trả sách
+                        </button>
+                        <button class="btn btn-warning btn-small" onclick="bulkRenew()" style="display: none;">
+                            <i class="fas fa-redo"></i> Gia hạn
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllBorrows" onchange="toggleSelectAllBorrows()">
+                                </th>
+                                <th>Mã phiếu <i class="fas fa-sort" onclick="sortBorrows('id')"></i></th>
+                                <th>Sách</th>
+                                <th>Người mượn</th>
+                                <th>Ngày mượn <i class="fas fa-sort" onclick="sortBorrows('borrowDate')"></i></th>
+                                <th>Hạn trả <i class="fas fa-sort" onclick="sortBorrows('dueDate')"></i></th>
+                                <th>Ngày trả</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="borrowsTableBody">
+                            <!-- Borrows will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div id="borrowsPagination" class="pagination">
+                    <!-- Pagination will be generated by JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add/Edit Borrow Modal -->
+    <div id="borrowModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('borrowModal')">&times;</span>
+            <h3 id="borrowModalTitle">Tạo phiếu mượn mới</h3>
+            <form id="borrowForm">
+                <input type="hidden" id="borrowId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="borrowUserId">Người mượn *</label>
+                        <select id="borrowUserId" required>
+                            <option value="">Chọn người mượn</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="borrowBookId">Sách *</label>
+                        <select id="borrowBookId" required>
+                            <option value="">Chọn sách</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="borrowDate">Ngày mượn *</label>
+                        <input type="date" id="borrowDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Hạn trả *</label>
+                        <input type="date" id="dueDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowNotes">Ghi chú</label>
+                    <textarea id="borrowNotes" rows="3" placeholder="Ghi chú về phiếu mượn..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('borrowModal')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="saveBorrowButtonText">Tạo phiếu mượn</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Return Book Modal -->
+    <div id="returnModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('returnModal')">&times;</span>
+            <h3>Trả sách</h3>
+            <div id="returnBookInfo">
+                <!-- Book return info will be loaded here -->
+            </div>
+            <form id="returnForm">
+                <input type="hidden" id="returnBorrowId">
+                
+                <div class="form-group">
+                    <label for="returnDate">Ngày trả *</label>
+                    <input type="date" id="returnDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bookCondition">Tình trạng sách</label>
+                    <select id="bookCondition">
+                        <option value="good">Tốt</option>
+                        <option value="fair">Khá</option>
+                        <option value="poor">Kém</option>
+                        <option value="damaged">Hư hỏng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="returnNotes">Ghi chú</label>
+                    <textarea id="returnNotes" rows="3" placeholder="Ghi chú về việc trả sách..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('returnModal')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-undo"></i> Trả sách
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Renew Modal -->
+    <div id="renewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('renewModal')">&times;</span>
+            <h3>Gia hạn sách</h3>
+            <div id="renewBookInfo">
+                <!-- Book renew info will be loaded here -->
+            </div>
+            <form id="renewForm">
+                <input type="hidden" id="renewBorrowId">
+                
+                <div class="form-group">
+                    <label for="newDueDate">Hạn trả mới *</label>
+                    <input type="date" id="newDueDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="renewReason">Lý do gia hạn</label>
+                    <textarea id="renewReason" rows="3" placeholder="Lý do gia hạn..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('renewModal')">Hủy</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-redo"></i> Gia hạn
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let currentBorrowPage = 1;
+        let borrowsPerPage = 10;
+        let filteredBorrows = [];
+        let borrowSortField = '';
+        let borrowSortDirection = 'asc';
+        let selectedBorrows = new Set();
+
+        // Initialize admin borrows page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check admin authentication
+            if (!window.libraryApp.currentUser || window.libraryApp.currentUser.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            loadBorrowsData();
+            setupBorrowsEventListeners();
+            populateUserSelect();
+            populateBookSelect();
+        });
+
+        function loadBorrowsData() {
+            filteredBorrows = [...window.libraryApp.borrowRecords];
+            updateBorrowStats();
+            renderBorrowsTable();
+            renderBorrowsPagination();
+        }
+
+        function updateBorrowStats() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            const activeBorrows = window.libraryApp.borrowRecords.filter(r => r.status === 'borrowed').length;
+            const overdueBorrows = window.libraryApp.borrowRecords.filter(r => {
+                return r.status === 'borrowed' && new Date(r.dueDate) < new Date();
+            }).length;
+            const returnedToday = window.libraryApp.borrowRecords.filter(r => {
+                return r.status === 'returned' && r.returnDate === today;
+            }).length;
+            const borrowedToday = window.libraryApp.borrowRecords.filter(r => {
+                return r.borrowDate === today;
+            }).length;
+
+            document.getElementById('activeBorrowsCount').textContent = activeBorrows;
+            document.getElementById('overdueBorrowsCount').textContent = overdueBorrows;
+            document.getElementById('returnedTodayCount').textContent = returnedToday;
+            document.getElementById('borrowedTodayCount').textContent = borrowedToday;
+        }
+
+        function renderBorrowsTable() {
+            const startIndex = (currentBorrowPage - 1) * borrowsPerPage;
+            const endIndex = startIndex + borrowsPerPage;
+            const borrowsToShow = filteredBorrows.slice(startIndex, endIndex);
+            
+            const tbody = document.getElementById('borrowsTableBody');
+            
+            if (borrowsToShow.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Không tìm thấy phiếu mượn nào</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = borrowsToShow.map(borrow => {
+                const book = window.libraryApp.books.find(b => b.id === borrow.bookId);
+                const user = window.libraryApp.users.find(u => u.id === borrow.userId);
+                const isOverdue = borrow.status === 'borrowed' && new Date(borrow.dueDate) < new Date();
+                const status = isOverdue ? 'overdue' : borrow.status;
+                
+                return `
+                    <tr class="${isOverdue ? 'overdue-row' : ''}">
+                        <td>
+                            ${borrow.status === 'borrowed' ? 
+                                `<input type="checkbox" value="${borrow.id}" onchange="toggleBorrowSelect(${borrow.id})">` : 
+                                ''
+                            }
+                        </td>
+                        <td><strong>#${borrow.id}</strong></td>
+                        <td>
+                            <div class="book-info">
+                                <strong>${book ? book.title : 'Sách không tồn tại'}</strong>
+                                ${book ? `<small>Tác giả: ${book.author}</small>` : ''}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-info">
+                                <strong>${user ? user.name : 'Người dùng không tồn tại'}</strong>
+                                ${user ? `<small>${user.email}</small>` : ''}
+                            </div>
+                        </td>
+                        <td>${window.libraryApp.formatDate(borrow.borrowDate)}</td>
+                        <td class="${isOverdue ? 'overdue-date' : ''}">${window.libraryApp.formatDate(borrow.dueDate)}</td>
+                        <td>${borrow.returnDate ? window.libraryApp.formatDate(borrow.returnDate) : '-'}</td>
+                        <td>
+                            <span class="status-badge ${status}">
+                                ${getStatusText(status)}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            ${borrow.status === 'borrowed' ? `
+                                <button class="btn btn-success btn-small" onclick="openReturnModal(${borrow.id})" title="Trả sách">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button class="btn btn-warning btn-small" onclick="openRenewModal(${borrow.id})" title="Gia hạn">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-info btn-small" onclick="viewBorrowDetail(${borrow.id})" title="Chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'borrowed': return 'Đang mượn';
+                case 'returned': return 'Đã trả';
+                case 'overdue': return 'Quá hạn';
+                default: return 'Không xác định';
+            }
+        }
+
+        function setupBorrowsEventListeners() {
+            // Search and filter inputs
+            document.getElementById('borrowSearch').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    applyBorrowFilters();
+                }
+            });
+
+            document.getElementById('statusFilter').addEventListener('change', applyBorrowFilters);
+            document.getElementById('dateFilter').addEventListener('change', applyBorrowFilters);
+
+            // Borrow form
+            document.getElementById('borrowForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveBorrow();
+            });
+
+            // Return form
+            document.getElementById('returnForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                returnBook();
+            });
+
+            // Renew form
+            document.getElementById('renewForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                renewBook();
+            });
+
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            const defaultDue = new Date();
+            defaultDue.setDate(defaultDue.getDate() + 14);
+            
+            document.getElementById('borrowDate').value = today;
+            document.getElementById('dueDate').value = defaultDue.toISOString().split('T')[0];
+            document.getElementById('returnDate').value = today;
+        }
+
+        function populateUserSelect() {
+            const select = document.getElementById('borrowUserId');
+            const readers = window.libraryApp.users.filter(u => u.role === 'reader');
+            
+            select.innerHTML = '<option value="">Chọn người mượn</option>' + 
+                readers.map(user => `<option value="${user.id}">${user.name} (${user.email})</option>`).join('');
+        }
+
+        function populateBookSelect() {
+            const select = document.getElementById('borrowBookId');
+            const availableBooks = window.libraryApp.books.filter(book => {
+                const borrowedCount = window.libraryApp.borrowRecords.filter(r => 
+                    r.bookId === book.id && r.status === 'borrowed'
+                ).length;
+                return borrowedCount < book.quantity;
+            });
+            
+            select.innerHTML = '<option value="">Chọn sách</option>' + 
+                availableBooks.map(book => 
+                    `<option value="${book.id}">${book.title} - ${book.author}</option>`
+                ).join('');
+        }
+
+        function applyBorrowFilters() {
+            const searchQuery = document.getElementById('borrowSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            filteredBorrows = window.libraryApp.borrowRecords.filter(borrow => {
+                const book = window.libraryApp.books.find(b => b.id === borrow.bookId);
+                const user = window.libraryApp.users.find(u => u.id === borrow.userId);
+                const isOverdue = borrow.status === 'borrowed' && new Date(borrow.dueDate) < new Date();
+                const currentStatus = isOverdue ? 'overdue' : borrow.status;
+                
+                const matchesSearch = !searchQuery || 
+                    (book && book.title.toLowerCase().includes(searchQuery)) ||
+                    (user && user.name.toLowerCase().includes(searchQuery));
+                
+                const matchesStatus = !statusFilter || currentStatus === statusFilter;
+                
+                let matchesDate = true;
+                if (dateFilter) {
+                    const today = new Date();
+                    const borrowDate = new Date(borrow.borrowDate);
+                    
+                    switch(dateFilter) {
+                        case 'today':
+                            matchesDate = borrowDate.toDateString() === today.toDateString();
+                            break;
+                        case 'week':
+                            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            matchesDate = borrowDate >= weekAgo;
+                            break;
+                        case 'month':
+                            matchesDate = borrowDate.getMonth() === today.getMonth() && 
+                                         borrowDate.getFullYear() === today.getFullYear();
+                            break;
+                    }
+                }
+                
+                return matchesSearch && matchesStatus && matchesDate;
+            });
+            
+            if (borrowSortField) {
+                applyBorrowSorting();
+            }
+            
+            currentBorrowPage = 1;
+            renderBorrowsTable();
+            renderBorrowsPagination();
+        }
+
+        function clearBorrowFilters() {
+            document.getElementById('borrowSearch').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            
+            filteredBorrows = [...window.libraryApp.borrowRecords];
+            currentBorrowPage = 1;
+            borrowSortField = '';
+            borrowSortDirection = 'asc';
+            
+            renderBorrowsTable();
+            renderBorrowsPagination();
+        }
+
+        function sortBorrows(field) {
+            if (borrowSortField === field) {
+                borrowSortDirection = borrowSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                borrowSortField = field;
+                borrowSortDirection = 'asc';
+            }
+            
+            applyBorrowSorting();
+            renderBorrowsTable();
+        }
+
+        function applyBorrowSorting() {
+            filteredBorrows.sort((a, b) => {
+                let valueA = a[borrowSortField];
+                let valueB = b[borrowSortField];
+                
+                if (borrowSortField === 'borrowDate' || borrowSortField === 'dueDate') {
+                    valueA = new Date(valueA);
+                    valueB = new Date(valueB);
+                }
+                
+                if (borrowSortDirection === 'asc') {
+                    return valueA > valueB ? 1 : -1;
+                } else {
+                    return valueA < valueB ? 1 : -1;
+                }
+            });
+        }
+
+        function renderBorrowsPagination() {
+            const totalPages = Math.ceil(filteredBorrows.length / borrowsPerPage);
+            const pagination = document.getElementById('borrowsPagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            if (currentBorrowPage > 1) {
+                paginationHTML += `
+                    <button class="btn btn-outline btn-small" onclick="changeBorrowPage(${currentBorrowPage - 1})">
+                        <i class="fas fa-chevron-left"></i> Trước
+                    </button>
+                `;
+            }
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentBorrowPage) {
+                    paginationHTML += `<button class="btn btn-primary btn-small">${i}</button>`;
+                } else if (i === 1 || i === totalPages || Math.abs(i - currentBorrowPage) <= 2) {
+                    paginationHTML += `<button class="btn btn-outline btn-small" onclick="changeBorrowPage(${i})">${i}</button>`;
+                } else if (i === currentBorrowPage - 3 || i === currentBorrowPage + 3) {
+                    paginationHTML += `<span>...</span>`;
+                }
+            }
+            
+            // Next button
+            if (currentBorrowPage < totalPages) {
+                paginationHTML += `
+                    <button class="btn btn-outline btn-small" onclick="changeBorrowPage(${currentBorrowPage + 1})">
+                        Sau <i class="fas fa-chevron-right"></i>
+                    </button>
+                `;
+            }
+            
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changeBorrowPage(page) {
+            currentBorrowPage = page;
+            renderBorrowsTable();
+            renderBorrowsPagination();
+        }
+
+        function openAddBorrowModal() {
+            document.getElementById('borrowModalTitle').textContent = 'Tạo phiếu mượn mới';
+            document.getElementById('saveBorrowButtonText').textContent = 'Tạo phiếu mượn';
+            document.getElementById('borrowForm').reset();
+            document.getElementById('borrowId').value = '';
+            
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            const defaultDue = new Date();
+            defaultDue.setDate(defaultDue.getDate() + 14);
+            
+            document.getElementById('borrowDate').value = today;
+            document.getElementById('dueDate').value = defaultDue.toISOString().split('T')[0];
+            
+            populateBookSelect(); // Refresh available books
+            document.getElementById('borrowModal').style.display = 'block';
+        }
+
+        function saveBorrow() {
+            const borrowData = {
+                userId: parseInt(document.getElementById('borrowUserId').value),
+                bookId: parseInt(document.getElementById('borrowBookId').value),
+                borrowDate: document.getElementById('borrowDate').value,
+                dueDate: document.getElementById('dueDate').value,
+                status: 'borrowed',
+                notes: document.getElementById('borrowNotes').value
+            };
+
+            const newBorrow = {
+                id: window.libraryApp.borrowRecords.length + 1,
+                ...borrowData
+            };
+
+            window.libraryApp.borrowRecords.push(newBorrow);
+            window.libraryApp.showAlert('Tạo phiếu mượn thành công!');
+
+            closeModal('borrowModal');
+            loadBorrowsData();
+        }
+
+        function openReturnModal(borrowId) {
+            const borrow = window.libraryApp.borrowRecords.find(b => b.id === borrowId);
+            if (!borrow) return;
+
+            const book = window.libraryApp.books.find(b => b.id === borrow.bookId);
+            const user = window.libraryApp.users.find(u => u.id === borrow.userId);
+
+            document.getElementById('returnBorrowId').value = borrowId;
+            document.getElementById('returnDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('bookCondition').value = 'good';
+            document.getElementById('returnNotes').value = '';
+
+            document.getElementById('returnBookInfo').innerHTML = `
+                <div class="return-info">
+                    <h4>Thông tin sách trả</h4>
+                    <p><strong>Sách:</strong> ${book ? book.title : 'Không tìm thấy'}</p>
+                    <p><strong>Người mượn:</strong> ${user ? user.name : 'Không tìm thấy'}</p>
+                    <p><strong>Ngày mượn:</strong> ${window.libraryApp.formatDate(borrow.borrowDate)}</p>
+                    <p><strong>Hạn trả:</strong> ${window.libraryApp.formatDate(borrow.dueDate)}</p>
+                    ${new Date(borrow.dueDate) < new Date() ? 
+                        '<p class="overdue-warning"><i class="fas fa-exclamation-triangle"></i> Sách này đã quá hạn!</p>' : ''
+                    }
+                </div>
+            `;
+
+            document.getElementById('returnModal').style.display = 'block';
+        }
+
+        function returnBook() {
+            const borrowId = parseInt(document.getElementById('returnBorrowId').value);
+            const returnDate = document.getElementById('returnDate').value;
+            const condition = document.getElementById('bookCondition').value;
+            const notes = document.getElementById('returnNotes').value;
+
+            const borrowIndex = window.libraryApp.borrowRecords.findIndex(b => b.id === borrowId);
+            if (borrowIndex !== -1) {
+                window.libraryApp.borrowRecords[borrowIndex].status = 'returned';
+                window.libraryApp.borrowRecords[borrowIndex].returnDate = returnDate;
+                window.libraryApp.borrowRecords[borrowIndex].condition = condition;
+                window.libraryApp.borrowRecords[borrowIndex].returnNotes = notes;
+
+                window.libraryApp.showAlert('Trả sách thành công!');
+                closeModal('returnModal');
+                loadBorrowsData();
+            }
+        }
+
+        function openRenewModal(borrowId) {
+            const borrow = window.libraryApp.borrowRecords.find(b => b.id === borrowId);
+            if (!borrow) return;
+
+            const book = window.libraryApp.books.find(b => b.id === borrow.bookId);
+            const user = window.libraryApp.users.find(u => u.id === borrow.userId);
+
+            document.getElementById('renewBorrowId').value = borrowId;
+            
+            // Set new due date to 2 weeks from current due date
+            const currentDue = new Date(borrow.dueDate);
+            currentDue.setDate(currentDue.getDate() + 14);
+            document.getElementById('newDueDate').value = currentDue.toISOString().split('T')[0];
+            document.getElementById('renewReason').value = '';
+
+            document.getElementById('renewBookInfo').innerHTML = `
+                <div class="renew-info">
+                    <h4>Thông tin gia hạn</h4>
+                    <p><strong>Sách:</strong> ${book ? book.title : 'Không tìm thấy'}</p>
+                    <p><strong>Người mượn:</strong> ${user ? user.name : 'Không tìm thấy'}</p>
+                    <p><strong>Hạn trả hiện tại:</strong> ${window.libraryApp.formatDate(borrow.dueDate)}</p>
+                </div>
+            `;
+
+            document.getElementById('renewModal').style.display = 'block';
+        }
+
+        function renewBook() {
+            const borrowId = parseInt(document.getElementById('renewBorrowId').value);
+            const newDueDate = document.getElementById('newDueDate').value;
+            const reason = document.getElementById('renewReason').value;
+
+            const borrowIndex = window.libraryApp.borrowRecords.findIndex(b => b.id === borrowId);
+            if (borrowIndex !== -1) {
+                window.libraryApp.borrowRecords[borrowIndex].dueDate = newDueDate;
+                window.libraryApp.borrowRecords[borrowIndex].renewReason = reason;
+                window.libraryApp.borrowRecords[borrowIndex].renewDate = new Date().toISOString().split('T')[0];
+
+                window.libraryApp.showAlert('Gia hạn sách thành công!');
+                closeModal('renewModal');
+                loadBorrowsData();
+            }
+        }
+
+        function viewBorrowDetail(borrowId) {
+            const borrow = window.libraryApp.borrowRecords.find(b => b.id === borrowId);
+            const book = window.libraryApp.books.find(b => b.id === borrow.bookId);
+            const user = window.libraryApp.users.find(u => u.id === borrow.userId);
+            
+            window.libraryApp.showAlert(`
+                <div class="borrow-detail">
+                    <h4>Chi tiết phiếu mượn #${borrow.id}</h4>
+                    <p><strong>Sách:</strong> ${book ? book.title : 'N/A'}</p>
+                    <p><strong>Người mượn:</strong> ${user ? user.name : 'N/A'}</p>
+                    <p><strong>Ngày mượn:</strong> ${window.libraryApp.formatDate(borrow.borrowDate)}</p>
+                    <p><strong>Hạn trả:</strong> ${window.libraryApp.formatDate(borrow.dueDate)}</p>
+                    ${borrow.returnDate ? `<p><strong>Ngày trả:</strong> ${window.libraryApp.formatDate(borrow.returnDate)}</p>` : ''}
+                    <p><strong>Trạng thái:</strong> ${getStatusText(borrow.status)}</p>
+                    ${borrow.notes ? `<p><strong>Ghi chú:</strong> ${borrow.notes}</p>` : ''}
+                </div>
+            `, 'info');
+        }
+
+        function showOverdueBooks() {
+            document.getElementById('statusFilter').value = 'overdue';
+            applyBorrowFilters();
+        }
+
+        function showReturnsDueToday() {
+            const today = new Date().toISOString().split('T')[0];
+            filteredBorrows = window.libraryApp.borrowRecords.filter(borrow => {
+                return borrow.status === 'borrowed' && borrow.dueDate === today;
+            });
+            currentBorrowPage = 1;
+            renderBorrowsTable();
+            renderBorrowsPagination();
+        }
+
+        function showPopularBooks() {
+            // Count borrows per book
+            const bookBorrowCounts = {};
+            window.libraryApp.borrowRecords.forEach(borrow => {
+                bookBorrowCounts[borrow.bookId] = (bookBorrowCounts[borrow.bookId] || 0) + 1;
+            });
+
+            // Sort books by borrow count
+            const popularBooks = Object.entries(bookBorrowCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([bookId, count]) => {
+                    const book = window.libraryApp.books.find(b => b.id === parseInt(bookId));
+                    return { book, count };
+                });
+
+            let message = '<h4>Top 10 sách được mượn nhiều nhất</h4>';
+            popularBooks.forEach((item, index) => {
+                message += `<p>${index + 1}. ${item.book ? item.book.title : 'Không tìm thấy'} (${item.count} lượt mượn)</p>`;
+            });
+
+            window.libraryApp.showAlert(message, 'info');
+        }
+
+        function toggleSelectAllBorrows() {
+            const selectAllCheckbox = document.getElementById('selectAllBorrows');
+            const borrowCheckboxes = document.querySelectorAll('#borrowsTableBody input[type="checkbox"]');
+            
+            borrowCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                const borrowId = parseInt(checkbox.value);
+                if (selectAllCheckbox.checked) {
+                    selectedBorrows.add(borrowId);
+                } else {
+                    selectedBorrows.delete(borrowId);
+                }
+            });
+            
+            updateBorrowBulkActions();
+        }
+
+        function toggleBorrowSelect(borrowId) {
+            if (selectedBorrows.has(borrowId)) {
+                selectedBorrows.delete(borrowId);
+            } else {
+                selectedBorrows.add(borrowId);
+            }
+            updateBorrowBulkActions();
+        }
+
+        function updateBorrowBulkActions() {
+            const bulkButtons = document.querySelectorAll('.bulk-actions button');
+            if (selectedBorrows.size > 0) {
+                bulkButtons.forEach(btn => btn.style.display = 'inline-block');
+            } else {
+                bulkButtons.forEach(btn => btn.style.display = 'none');
+            }
+        }
+
+        function bulkReturn() {
+            if (selectedBorrows.size === 0) return;
+            
+            if (confirm(`Bạn có chắc chắn muốn trả ${selectedBorrows.size} sách đã chọn?`)) {
+                const today = new Date().toISOString().split('T')[0];
+                selectedBorrows.forEach(borrowId => {
+                    const borrowIndex = window.libraryApp.borrowRecords.findIndex(b => b.id === borrowId);
+                    if (borrowIndex !== -1) {
+                        window.libraryApp.borrowRecords[borrowIndex].status = 'returned';
+                        window.libraryApp.borrowRecords[borrowIndex].returnDate = today;
+                    }
+                });
+                
+                selectedBorrows.clear();
+                loadBorrowsData();
+                window.libraryApp.showAlert('Đã trả tất cả sách được chọn');
+            }
+        }
+
+        function bulkRenew() {
+            if (selectedBorrows.size === 0) return;
+            
+            if (confirm(`Bạn có chắc chắn muốn gia hạn ${selectedBorrows.size} sách đã chọn thêm 14 ngày?`)) {
+                selectedBorrows.forEach(borrowId => {
+                    const borrowIndex = window.libraryApp.borrowRecords.findIndex(b => b.id === borrowId);
+                    if (borrowIndex !== -1) {
+                        const currentDue = new Date(window.libraryApp.borrowRecords[borrowIndex].dueDate);
+                        currentDue.setDate(currentDue.getDate() + 14);
+                        window.libraryApp.borrowRecords[borrowIndex].dueDate = currentDue.toISOString().split('T')[0];
+                    }
+                });
+                
+                selectedBorrows.clear();
+                loadBorrowsData();
+                window.libraryApp.showAlert('Đã gia hạn tất cả sách được chọn');
+            }
+        }
+    </script>
+
+    <style>
+        .borrow-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .borrow-filters {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .quick-actions {
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .action-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .action-card h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .action-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .book-info, .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-info small, .user-info small {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .overdue-row {
+            background-color: #fff5f5;
+        }
+
+        .overdue-date {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+
+        .return-info, .renew-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .return-info h4, .renew-info h4 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .overdue-warning {
+            color: #e53e3e;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .overdue-warning i {
+            margin-right: 0.5rem;
+        }
+
+        .borrow-detail {
+            text-align: left;
+        }
+
+        .borrow-detail h4 {
+            margin-bottom: 1rem;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .borrow-detail p {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .borrow-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
