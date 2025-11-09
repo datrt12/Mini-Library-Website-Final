@@ -9,8 +9,12 @@ export const registerUser = async (request, reply) => {
     const exist = await User.findOne({ username });
     if (exist) return reply.code(400).send({ message: 'Tên đăng nhập đã tồn tại' });
 
-    const hash = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hash, role });
+    const NO_HASH = process.env.NO_HASH === '1' || process.env.PASSWORD_HASH === 'off' || process.env.PASSWORD_HASH === 'false';
+    let storedPassword = password;
+    if (!NO_HASH) {
+      storedPassword = await bcrypt.hash(password, 10);
+    }
+    const user = new User({ username, password: storedPassword, role });
     await user.save();
     return reply.code(201).send({ message: 'Đăng ký thành công' });
   } catch (err) {
@@ -24,10 +28,39 @@ export const loginUser = async (request, reply) => {
     const { username, password } = request.body;
     const user = await User.findOne({ username });
     if (!user) return reply.code(404).send({ message: 'Không tìm thấy tài khoản' });
-
-    const valid = await bcrypt.compare(password, user.password);
+    const NO_HASH = process.env.NO_HASH === '1' || process.env.PASSWORD_HASH === 'off' || process.env.PASSWORD_HASH === 'false';
+    // Support legacy plaintext + optional plaintext mode
+    let stored = user.password;
+    let valid = false;
+    const isLikelyBcrypt = typeof stored === 'string' && stored.startsWith('$2');
+    if (NO_HASH) {
+      // Plaintext mode: prefer plain compare; if DB contains bcrypt hash, allow bcrypt compare for compatibility
+      if (password === stored) {
+        valid = true;
+      } else if (isLikelyBcrypt) {
+        valid = await bcrypt.compare(password, stored);
+      }
+    } else {
+      // Hashed mode: handle both hashed and legacy plaintext (migrate)
+      if (isLikelyBcrypt) {
+        valid = await bcrypt.compare(password, stored);
+      } else if (password === stored) {
+        valid = true;
+        // Migrate to bcrypt
+        try {
+          const newHash = await bcrypt.hash(password, 10);
+          user.password = newHash;
+          await user.save();
+        } catch (mErr) {
+          request.log.warn({ msg: 'Không thể migrate mật khẩu plaintext', error: mErr });
+        }
+      }
+    }
     if (!valid) return reply.code(401).send({ message: 'Sai mật khẩu' });
 
+    if (!process.env.JWT_SECRET || String(process.env.JWT_SECRET).trim() === '') {
+      return reply.code(500).send({ message: 'JWT_SECRET chưa được cấu hình' });
+    }
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
     return reply.send({ message: 'Đăng nhập thành công', token });
   } catch (err) {

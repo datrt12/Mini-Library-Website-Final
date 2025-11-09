@@ -6,7 +6,9 @@ const bookSchema = new mongoose.Schema({
   author: { type: String, required: true },
   category: { type: String },
   year: { type: Number },
-  available: { type: Boolean, default: true }
+  available: { type: Boolean, default: true },
+  // image can be a URL or a base64 data URL
+  image: { type: String }
 });
 
 export const Book = mongoose.model("Book", bookSchema);
