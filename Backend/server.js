@@ -19,16 +19,11 @@ await fastify.register(fastifyCors, {
   methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 });
-// Route test
+
 fastify.get('/', async () => {
   return { message: 'Backend Fastify đã chạy!' };
 });
 
-// Đăng ký route sách
-await fastify.register(bookRoutes);
-await fastify.register(borrowRoutes);
-await fastify.register(userRoutes);
-await fastify.register(studentRoutes);
 await fastify.register(bookRoutes, { prefix: '/books' });
 await fastify.register(borrowRoutes, { prefix: '/borrows' });
 await fastify.register(userRoutes, { prefix: '/api/users' });
